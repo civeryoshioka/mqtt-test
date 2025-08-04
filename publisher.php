@@ -18,9 +18,9 @@ if ($mqtt->connect(true, NULL, $username, $password)) {
     $qos = 0; // Quality of Service
     $retain = true ;
     $dataSensor = [
-        'suhu' => 30.5,
-        'kelembapan' => 65.2,
-        'tekanan' => 1012.6
+        'suhu' => 30.7,
+        'kelembapan' => 65.5,
+        'tekanan' => 1012.3
     ];
     $payload = json_encode($dataSensor);
     $mqtt->publish($topic, $payload, $qos, $retain);

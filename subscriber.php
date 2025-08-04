@@ -4,27 +4,44 @@
 require('vendor/autoload.php'); // Pastikan sudah install php-mqtt/client via Composer
 
 use Bluerhinos\phpMQTT;
-$server   = '103.129.148.198';
+$server   = 'dcows.berdikari.pens.ac.id';
 $port     = 1883;
+$username = "dcows";    // Ganti dengan username broker
+$password = "dcows123";  
 $clientId = 'phpMQTTpublisher';
-//$topic    = 'test/topic';
+$topic    = 'application/4674110f-9988-41c2-8ead-12ef5e9ca344/device/b43b115777468f27/event/up';
 
 
 
 $mqtt = new phpMQTT($server, $port, $clientId);
 
-if (!$mqtt->connect(true, NULL)) {
+if (!$mqtt->connect(true, NULL,$username, $password)) {
     exit("Gagal konek ke broker MQTT.\n");
 }
 
-$topics['test/topic1'] = [
+$topics['application/4674110f-9988-41c2-8ead-12ef5e9ca344/device/b43b115777468f27/event/up'] = [
     'qos' => 0,
     'function' => function($topic, $msg) {
-        echo "Pesan diterima dari topik [$topic]:\n";
+        echo "Pesan diterima dari Topik [$topic]:\n";
         $data = json_decode($msg, true);
-        echo "Suhu: {$data['suhu']} °C\n";
-        echo "Kelembapan: {$data['kelembapan']} %\n";
-        echo "Tekanan: {$data['tekanan']} hPa\n";
+        
+        echo "Voltage : {$data['object']['voltage']} \n";
+        echo "lampState : {$data['object']['lampState']} \n";
+        echo "counter : {$data['object']['counter']} \n";
+        echo "frequency : {$data['object']['frequency']} \n";
+        echo "powerFactor : {$data['object']['powerFactor']} \n";
+        $timestamp = $data['object']['datetime'];
+        $datetime = date("Y-m-d H:i:s", $timestamp);
+        echo "datetime : $datetime \n";
+        echo "brightness : {$data['object']['brightness']} \n";
+        echo "errorState : {$data['object']['errorState']} \n";  
+        echo "current : {$data['object']['current']} \n";
+        echo "energy : {$data['object']['energy']} \n";
+        echo "errorState : {$data['object']['errorState']} \n";
+        echo "nodeId : {$data['object']['nodeId']} \n";
+        echo "power : {$data['object']['power']} \n";
+        echo "temperature : {$data['object']['temperature']} \n";
+        echo "------------------------\n";
     }
 ];
 
@@ -33,6 +50,6 @@ $mqtt->subscribe($topics, 0);
 // Jalankan sampai ada 1 pesan diterima
 $start = time();
 while ($mqtt->proc()) {
-    if (time() - $start > 10) break; // maksimal 10 detik
+    if (time() - $start > 1000) break; // maksimal 10 detik
 }
 $mqtt->close();
